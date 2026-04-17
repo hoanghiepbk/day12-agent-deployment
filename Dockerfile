@@ -70,8 +70,8 @@ WORKDIR /app
 COPY --from=builder /root/.local /home/agent/.local
 
 # Copy source code (thứ tự: ít thay đổi trước, hay thay đổi sau)
-COPY utils/ ./utils/   # utils ít thay đổi
-COPY app/   ./app/     # app code hay thay đổi hơn
+COPY utils/ ./utils/
+COPY app/   ./app/
 
 # Đổi owner toàn bộ /app về user "agent"
 # Cần làm trước khi switch user (sau USER agent thì không có quyền chown)
@@ -81,13 +81,10 @@ RUN chown -R agent:agent /app /home/agent/.local
 USER agent
 
 # Environment variables mặc định
-ENV PATH=/home/agent/.local/bin:$PATH  \
-    PYTHONPATH=/app                     \
-    # Không tạo file .pyc (không cần trong container)
-    PYTHONDONTWRITEBYTECODE=1           \
-    # Không buffer stdout/stderr (log xuất hiện ngay lập tức)
-    PYTHONUNBUFFERED=1                  \
-    # Disable Python hash randomization (reproducible)
+ENV PATH=/home/agent/.local/bin:$PATH \
+    PYTHONPATH=/app \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
     PYTHONHASHSEED=random
 
 EXPOSE 8000
