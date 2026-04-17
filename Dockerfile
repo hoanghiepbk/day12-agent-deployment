@@ -61,7 +61,7 @@ FROM python:3.11-slim AS runtime
 # TẠI SAO KHÔNG DÙNG ROOT?
 #   - Nếu app bị compromise, attacker chỉ có quyền user "agent", không phải root
 #   - Không thể sửa system files, không thể cài thêm tools nguy hiểm
-RUN groupadd -r agent && useradd -r -g agent -d /app -s /sbin/nologin agent
+RUN groupadd -r agent && useradd -r -m -g agent -d /home/agent -s /sbin/nologin agent
 
 WORKDIR /app
 
