@@ -98,17 +98,10 @@ HEALTHCHECK \
     --timeout=10s  \
     --start-period=15s \
     --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" \
+    CMD python -c "import urllib.request, os; port = os.environ.get('PORT', '8000'); urllib.request.urlopen('http://localhost:' + port + '/health')" \
     || exit 1
 
-# CMD vs ENTRYPOINT:
-#   - CMD: lệnh mặc định, có thể override khi docker run image <command>
-#   - ENTRYPOINT: lệnh cố định, CMD là arguments cho ENTRYPOINT
-# Dùng exec form ["cmd", "arg"] thay vì shell form "cmd arg":
-#   - Exec form: PID 1 = uvicorn → nhận SIGTERM trực tiếp → graceful shutdown
-#   - Shell form: PID 1 = /bin/sh → SIGTERM gửi cho shell, không tới uvicorn!
-CMD ["uvicorn", "app.main:app", \
-     "--host", "0.0.0.0",       \
-     "--port", "8000",           \
-     "--workers", "1",           \
-     "--timeout-graceful-shutdown", "30"]
+# CMD: Lệnh khởi chạy server
+# Chạy thông qua python module để bắt được khối lệnh if __name__ == "__main__":
+# Qua đó ứng dụng sẽ tự động chọn PORT do Railway cấp.
+CMD ["python", "-m", "app.main"]
